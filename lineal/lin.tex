@@ -1,0 +1,510 @@
+\documentclass{article}
+
+\input{../preamble}
+
+\DeclareMathOperator*{\vdim}{dim}
+\DeclareMathOperator*{\vspan}{span}
+\DeclareMathOperator*{\vrank}{rank}
+\DeclareMathOperator*{\trank}{rank}
+\DeclareMathOperator*{\tnull}{null}
+\DeclareMathOperator*{\tdim}{dim}
+\DeclareMathOperator*{\tnullity}{nullity}
+\DeclareMathOperator*{\trange}{range}
+
+\newcommand{\swap}{\leftrightarrow}
+
+\begin{document}
+
+\Opensolutionfile{ans}[ans1]
+
+\begin{example}
+  The set of all real numbers along with addition and multiplication
+  has a number of nice properties. The set is closed under both
+  operations. Both operations are commutative, associative, has an
+  identity, and has inverses (except for $0$ which doesn't have a
+  multiplicative inverse). Also, multiplication distributes over
+  addition. Any set that has all these properties is called a field.
+\end{example}
+
+\begin{example}
+  A field can contain a finite number of elements as well. The
+  smallest field called $F_2$ has just two elements $0$ and $1$.
+\end{example}
+
+\begin{example}
+  Consider the Euclidean plane $R^2$. We define addition of two
+  vectors as coordinate-wise addition,
+  $(x_1, y_1) + (x_2, y_2) = (x_1 + x_2, y_1 + y_2)$, and multiplying
+  a vector by a scalar as $c(x, y) = (cx, cy)$.
+\end{example}
+
+\section{Basis, Dimension, and Linear Independence}
+
+\begin{example}
+  Consider the vector space $R^2$. Any vector $(x, y)$ can be
+  expressed as the linear combination $x(1, 0) + y(0, 1)$. We say that
+  the vectors $(1, 0)$ and $(0, 1)$ span the whole space $R^2$. These
+  are not the only vectors that span $R^2$. The vectors $(1, 1)$ and
+  $(1, 2)$ also span $R^2$. Because, we can express any vector
+  $(x, y) = (2x-y)(1, 1) + (y-x)(1, 2)$.
+\end{example}
+
+
+\begin{example}
+  If we consider the three vectors $(1, 0)$, $(0, 1)$, and $(1, 1)$,
+  they span the whole space $R^2$. However, only two of these vectors
+  are required to span $R^2$. This is because, for example, $(1, 1)$
+  can be expressed as the linear combination $(1, 0) + (0, 1)$ of the
+  other two vectors. Therefore, any linear combination of these three
+  vectors can be converted to a linear combination of the first two
+  vectors. Indeed,
+  $\alpha_1 (1, 0) + \alpha_2 (0, 1) + \alpha_3 (1,1) = (\alpha_1 +
+  \alpha_3) (1, 0) + (\alpha_2 + \alpha_3) (0, 1)$ for any
+  $\alpha_1, \alpha_2, \alpha_3$.
+\end{example}
+
+Linearly independent set of vectors that span the whole vector space
+is a basis.
+
+\begin{exercise}
+  Show that the set $\{(1, 0), (a, b)\}$ is a basis for the vector
+  space $R^2$ if and only if $(a, b)\neq \alpha(1, 0)$ for any
+  $\alpha$.
+\end{exercise}
+
+\begin{theorem}
+  If $B$ and $B'$ are bases for the vector space $V$, then
+  $|B| = |B'|$.
+\end{theorem}
+\begin{proof}
+  We are going to use proof by contradiction. Let
+  $B = \{u_1,\dotsc ,u_n\}$ and $B' = \{v_1,\dotsc ,v_m\}$ such that
+  $n\leq m$. We are going to construct sequences $S_0, \dotsc, S_n$
+  such that $\vspan(S_i) = V$ for all $i$, $S_0$ contains only vectors
+  from $B$, and $S_n$ contains only vectors from $B'$. Start with
+  $S_0 = (u_1, \dotsc, u_n)$. Now consider the sequence
+  $S = (u_1, \dotsc, u_n, v_1)$. Since $B$ is a basis, we can express
+  $v_1$ as the linear combination of the previous vectors. Since $B'$
+  is also a basis, we have $v_1 \neq 0$ and therefore at least one of
+  the $u_i$s must have a non-zero coefficient in this linear
+  combination. Choose the minimum such $i$. We can remove $u_i$ from
+  $S$ to get the sequence $S_1$. Since $u_i$ can be expressed as a
+  linear combination of $S_1$ and $v_1$ is a linear combination of
+  $u_1,\dotsc,u_n$, we have $\vspan(S_0) = \vspan(S_1)$. In the
+  $i^\text{th}$ step, we have $S_i$ that contains some vectors from
+  $B$ in the left part and $v_1,\dotsc,v_i$ as its rightmost
+  elements. Now consider $S = S_i, v_{i+1}$. We can express $v_{i+1}$
+  as a linear combination of vectors in $S_i$ because
+  $\vspan(S_i) = \vspan(B)$. This linear combination must contain
+  atleast one $u_i$ that has a non-zero coefficient because $B'$ is
+  linearly independent. As before, we can remove $u_i$ from $S$ to
+  obtain $S_i$ and satisfy $\vspan(S_i) = \vspan(S_{i+1})$. The
+  sequence $S_n$ is $(v_1,\dotsc,v_n)$ and satisfies
+  $\vspan(S_n) = V$. Now if $m > n$, then the vector $v_{n+1} \in V$
+  can be expressed as a linear combination of $v_1,\dotsc,v_n$. This
+  is a contradiction to the fact that $B'$ is linearly independent.
+\end{proof}
+
+\begin{corollary}
+  If $S$ is linearly independent and has $\vdim(V)$ vectors, then
+  $S$ is a basis of $V$.
+\end{corollary}
+\begin{proof}
+  Let $B$ be any basis of $V$. Apply the previous proof with $B' =
+  S$. This will prove that $\vspan(S) = V$.
+\end{proof}
+
+\begin{proposition}
+  Any $S$ such that $\vspan(S) = V$ contains a basis of $V$.
+\end{proposition}
+\begin{proof}
+  If $0\in S$, we can remove $0$ without changing the span.  If $S$ is
+  linearly dependent, then choose a $v$ that can be expressed as a
+  non-zero linear combination of other vectors and remove $v$. This
+  does not change the span. Continue until the set of vectors are
+  linearly independent.
+\end{proof}
+
+\begin{proposition}
+  Any linearly independent set $S\subseteq V$ can be extended to be a
+  basis of $V$.
+\end{proposition}
+\begin{proof}
+  Choose $v\in V\setminus \vspan(S)$ and add it to $S$. This set is
+  linearly independent and spans a larger vector space. Continue until
+  the span equals $V$.
+\end{proof}
+
+Ordered basis and coordinate representation of vectors.
+
+\section{Subspaces}
+
+\begin{exercise}
+  A set of points $L\subseteq R^2$ is called a \emph{line} if there
+  are real numbers $a$, $b$, and $c$ such that all points
+  $(x, y)\in L$ satisfy the equation $ax + by = c$.
+
+  When is a line a subspace of $R^2$?
+
+  \begin{sol}
+    When $(0, 0)$ satisfies the equation for the line.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Show that the only subspaces of $R^2$ are the trivial subspaces $0$
+  and $R^2$ and lines passing through the origin.
+
+  \begin{sol}
+    Any non-trivial subspace $L$ has dimension 1. Therefore, we can
+    write
+    $L = \{(x, y) \in R^2: (x, y) = a(x_0, y_0) \text{ for some } a\in
+    R\}$ for some $(x_0, y_0)\in R^2$. The set $L$ is the line
+    represented by the equation $y_0 x - x_0 y = 0$. Any point in $L$
+    satisfies this equation. On the other hand, if $(a, b)$ satisfies
+    this equation, then $a y_0 = b x_0$ or $(a, b) = b/y_0(x_0, y_0)$
+    when $y_0 \neq 0$. If $y_0 = 0$, then $x_0\neq 0$ since $L$ is a
+    non-trivial subspace. Then, we have $b = 0$ and
+    $(a, 0) = a/x_0(x_0, 0)$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Can you describe the subspaces of ${(F^p)}^2$ in a similar fashion
+  to the subspaces of $R^2$.
+\end{exercise}
+
+\begin{exercise}
+  Describe all the subspaces of $R^3$.
+\end{exercise}
+
+\section{Systems of Linear Equations}
+
+We are interested in the solutions of the homogenous system $Ax =
+0$. When does this system have a non-trivial solution? Can we describe
+all solutions of the system?
+
+Matrix Multiplication: The element-wise, row-wise, and column-wise
+views.
+
+Elementary row operations on a matrix $A$ are:
+
+\begin{description}
+\item [$r_i\swap r_j$] Swap two rows of $A$.
+\item [$r_i\gets c r_i$] Multiply any row of $A$ with an $\alpha\neq 0$.
+\item [$r_i \gets r_i + c r_j$] Add a scalar multiple of a row to
+  another row.
+\end{description}
+
+Two matrices are row-equivalent if one can be obtained from the other
+using elementary row operations.
+
+\begin{theorem}
+  Row-equivalence is an equivalence relation.
+\end{theorem}
+\begin{proof}
+  Antisymmetry can be proved by observing that all row operations are
+  invertible. Reflexivity and transitivity are then trivial.
+\end{proof}
+
+Describe row-reduced echelon form and elementary matrices.
+
+Matrix Inverse: Computation using Gaussian-Elimination and
+${(AB)}^{-1} = B^{-1}A^{-1}$
+
+\begin{theorem}
+  Elementary row operations do not change the row space of the matrix.
+\end{theorem}
+\begin{proof}
+  Let $r_1,\dotsc,r_m$ be the rows of the matrix. We will show how to
+  transform between linear combinations ($\alpha$) of the rows before
+  the operation to linear combinations ($\alpha'$) of the rows after
+  the operation to generate the same vector.
+  \begin{description}
+  \item [$r_i \swap r_j$] Swap the coefficients of $r_i$ and $r_j$.
+  \item [$r_i \gets c r_i$] Use $\alpha_i' = c^{-1}\alpha_i$ and
+    $\alpha_i = c\alpha_i'$.
+  \item [$r_i \gets r_i + c r_j$] Use $\alpha_j' = \alpha_j - c\alpha_i$
+    and $\alpha_j = \alpha_j' + c\alpha_i'$.
+  \end{description}
+\end{proof}
+
+More interesting is how the column space changes with row
+operations. Consider the following example,
+
+\begin{example}
+  \begin{equation*}
+    A =
+    \begin{pmatrix}
+      1 & 2\\
+      1 & 2
+    \end{pmatrix}
+    \to
+    \begin{pmatrix}
+      1 & 2\\
+      0 & 0
+    \end{pmatrix}
+    = B
+  \end{equation*}
+  The column space of $A$ is $\{[v; v] : v\in R\}$ and that of $B$ is
+  $\{[v; 0] : v\in R\}$. Therefore, the column space may change as a
+  result of a row operation. But, the dimension of the column space
+  was unchanged by the above operation. Infact, we can prove something
+  stronger. In the above example, columns 1 and 2 of $A$ were linearly
+  dependent and remained so after the row operation. On the other
+  hand, a set of columns that are linearly independent will also
+  remain so after any elementary row operation, Here, we can see that
+  columns 1 and 2 remained non-zero after the operation.
+\end{example}
+
+We now formally prove the above observation.
+
+\begin{lemma}
+  Let $U$ be a subset of columns of a matrix. Let $U'$ be the
+  corresponding set of columns after an elementary row operation, then
+  a linear combination $\alpha$ witnesses the linear dependence of $U$
+  if and only if it witnesses the linear dependence of $U'$.
+\end{lemma}
+\begin{proof}
+  Let $u_1,\ldots,u_n$ be the columns of the $m\times n$ matrix where
+  $u_i = [a_{1i}; \dotso ; a_{mi}]$. Consider any
+  $U\subset\{u_1,\dotsc,u_n\}$. Let $U'$ be the vectors in $U$ after
+  performing the elementary row operation.
+  
+  \begin{description}
+  \item [$r_i \swap r_j$] The linear combinations in row $i$ and $j$
+    are simply swapped. Since both are $0$, the result follows.
+    
+  \item [$r_i \gets c r_i$] The linear combination at row $i$ is
+    multiplied by $c$ or $c^{-1}$ which does not change the value $0$.
+    
+  \item [$r_i \gets r_i + c r_j$] Assume
+    $\alpha_1 u_1 + \dotsm + \alpha_k u_k = 0$. This implies
+    $\alpha_1 a_{i1} + \dotsm \alpha_k a_{ik} = 0$ and
+    $\alpha_1 a_{j1} + \dotsm \alpha_k a_{jk} = 0$. Then the row $i$
+    of $\alpha_1 u_1' + \dotsm + \alpha_k u_k'$ is equal to
+    $\alpha_1 (a_{i1} + c a_{j1}) + \dotsm \alpha_k (a_{ik} + c
+    a_{kj}) = 0$. For the other direction, consider
+    $\alpha_1 u_1' + \dotsm + \alpha_k u_k' = 0$, then we have
+    $\alpha_1 (a_{i1} + c a_{j1}) + \dotsm \alpha_k (a_{ik} + a_{jk})
+    = 0$ and $\alpha_1 a_{j1} + \dotsm \alpha_k a_{jk} = 0$. These two
+    equalities imply $\alpha_1 a_{i1} + \dotsm \alpha_k a_{ik} = 0$.
+  \end{description}
+\end{proof}
+
+\begin{corollary}
+  Elementary row operations do not change the dimension of the column
+  space of the matrix.
+\end{corollary}
+\begin{proof}
+  Consider a subset of columns that form a basis for the column
+  space. These columns will remain linearly independent after
+  performing elementary row operations on the matrix. So the dimension
+  of the new column space is atleast that of the original. Since we
+  can also obtain the original matrix from the new one using
+  elementary row operations, it follows that the dimension of the
+  original column space is atleast that of the new one.
+\end{proof}
+
+\begin{theorem}
+  The row rank and column rank of a matrix are the same.
+\end{theorem}
+\begin{proof}
+  Let $A$ be an $m\times n$ matrix. Consider the matrix $R$ that is
+  the RREF of $A$. Let $r$ be the number of non-zero rows in $R$. Then
+  row rank of $A$ is $r$ since row space of $A$ and row space of $R$
+  are the same and the rows of $R$ are linearly independent. Let $U$
+  be the column space of $A$ and let $U'$ be the column space of
+  $R$. We have $c = \vdim(U) = \vdim(U')\leq r$. Considering the
+  transpose of $A$ and the same argument, we have $r\leq c$ as well.
+\end{proof}
+
+\begin{theorem}
+  If $R$ is obtained from $A$ using elementary row opertions, then
+  $Ax = 0$ and $Rx = 0$ has the same solutions.
+\end{theorem}
+\begin{proof}
+  $0$ is a common solution. Any non-zero solution $x*$ to $Ax = 0$ can
+  be viewed as witnessing linear dependence of columns of
+  $A$. Therefore, $x*$ also witnesses linear dependence of columns of
+  $R$ or in other words, $Rx* = 0$. The reverse is also true by the
+  same argument.
+\end{proof}
+
+Consider the system $Ax = b$ for $b\neq 0$. Describe the solutions of
+this system.
+
+\begin{theorem}
+  Let $A$ and $A'$ be $m\times n$ matrices such that $A'$ is obtained
+  from $A$ using an elementary row operation. Let $b$ be an
+  $m\times 1$ vector and let $b'$ be the vector obtained from $b$ by
+  applying the same row operation. Then $A\alpha = b$ if and only if
+  $A'\alpha = b'$
+\end{theorem}
+\begin{proof}
+  We split the proof based on the row operation used to obtain $A'$
+  from $A$.
+  \begin{description}
+  \item [$r_i\swap r_j$] The linear combinations on row $i$ and row
+    $j$ are swapped which means the corresponding rows of $b$ (or
+    $b'$) are swapped resulting in $b'$ (respectively $b$).
+  \item [$r_i\gets cr_i$] If $\alpha$ is a solution to $Ax = b$, then
+    row $i$ of $A'\alpha$ is row $i$ of $A\alpha = b$ multiplied by
+    $c$, i.e., same as that of $b'$. If $\alpha$ is a solution to
+    $A'x = b'$, then row $i$ of $A\alpha$ is row $i$ of $b'$
+    multiplied by $c^{-1}$, i.e., same as that of $b$.
+  \item [$r_i\gets r_i + c r_j$] Let $A\alpha = b$, then row $i$ of
+    $A'\alpha$ is $b_i + c b_j = b_i'$. If $A'\alpha = b'$, then we
+    have
+    $\alpha_1 (a_{i1} + c a_{j1}) + \dotsm + \alpha_n (a_{in} + c
+    a_{jn}) = b_i' = b_i + c b_j$ and
+    $\alpha_1 a_{j1} + \dotsm + \alpha_n a_{jn} = b_j' = b_j$. Then,
+    row $i$ of $A\alpha$ is
+    $\alpha_1 a_{i1} + \dotsm + \alpha_n a_{in} = b_i' - c b_j = b_i$.
+  \end{description}
+\end{proof}
+
+The above theorem implies the following procedure to solve the linear
+system $Ax = b$ when $b\neq 0$. Let $R$ be the RREF of $A$ and let
+$b'$ be the vector obtained from $b$ by applying the same sequence of
+elementary operations. Then, the solutions of $Rx = b'$ are the same
+as that of $Ax = b$. If $b'$ has a non-zero row $i$ and row $i$ of $R$
+is zero, then the system has no solution. Otherwise, let $r$ be the
+rank of $R$. Then we have $i_1 < \dotsm < i_r \leq n$ and the systems
+of equations are:
+
+\begin{align*}
+  x_{i_1} &+ \sum_{j > i_1, j\not\in\{i_1\dotsc,i_r\}} a_{1j} x_j = b_1\\
+          &\vdots&\\
+  x_{i_r} &+ \sum_{j > i_r, j\not\in\{i_1\dotsc,i_r\}} a_{1j} x_j = b_r
+\end{align*}
+
+Now we can substitute any value for $n-r$ variables other than
+$x_{i_j}$ and obtain unique values for $x_{i_1},\dotsc,x_{i_r}$ that
+is a solution. If $r = n$, we get a unique solution. If $r < n$, then
+the set of solutions is in one-to-one correspondence with a vector
+space of dimension $n-r$. If the field is finite, this means that the
+system will have exactly ${|F|}^{n-r}$ solutions.
+
+\begin{enumerate}
+\item $\vrank(A) = \vrank(A|b) < n$: Many solutions.
+\item $\vrank(A) = \vrank(A|b) = n$: Unique solution.
+\item $\vrank(A) < \vrank(A|b)$: No solutions.
+\end{enumerate}
+
+\section{Linear Transformations}
+
+A mapping that preserves structure is a homomorphism. A bijective
+homomorphism is an isomorphism.
+
+A function $T$ from a vector space $V$ over $F$ to $W$ over $F$ is
+called a linear transformation if it is a homomorphism. In other
+words, $T(\alpha u + v) = \alpha T(u) + T(v)$ for all $u, v\in V$ and
+all $\alpha\in F$.
+
+\begin{lemma}
+  If $T : U\mapsto V$ is an isomorphism between vector spaces, then
+  $\vdim(U) = \vdim(V)$.
+\end{lemma}
+\begin{proof}
+  Let $u_1, \dotsc, u_n$ be a basis for $U$. Let $v_i = T(u_i)$ for
+  all $i$. Then, the vectors $v_1,\dotsc,v_n$ form a basis for $V$.
+  First of all, they are linearly independent because if
+  $\sum_i \alpha_i v_i = 0$, then $T(\sum_i \alpha_i u_i) = 0$. Since
+  $T$ is an isomorphism, only the zero vector can map to $0$. Take any
+  vector $v\in V$. Let $\sum_i\alpha_iu_i = u\in U$ such that
+  $T(u) = v$. Then, we have $T(u) = \sum_i\alpha_iv_i = v$ proving
+  that $v_1,\dotsc,v_n$ spans $V$.
+\end{proof}
+
+\begin{lemma}
+  If $U$ and $V$ are vector spaces of the same dimension, then they
+  are isomorphic.
+\end{lemma}
+\begin{proof}
+  Consider the linear transformation $T(u_i) = v_i$, where $u_i$s and
+  $v_i$s are bases of $U$ and $V$ respectively. This function is
+  one-one because $T(\sum_i\alpha_i u_i) = T(\sum_i\beta_i u_i)$
+  implies $\sum_i\alpha_i v_i = \sum_i\beta_i v_i$ which implies
+  $\alpha = \beta$ because $v_i$s are independent. This function is
+  onto because $v = \sum_i \alpha_i v_i = T(\sum_i\alpha_i u_i)$.
+\end{proof}
+
+
+\begin{align*}
+\tnull(T) &= \{x : T(x) = 0 \}\\
+\trange(T) &= \{y : \text{there exists an $x$ such that $T(x) = y$}\}
+\end{align*}
+
+Prove that $\tnull(T)$ and $\trange(T)$ are subspaces of $V$ and $W$
+respectively.
+
+\begin{example}
+  Consider the linear transformation $T(x, y) = (x, x)$. In
+  particular, we have $T(1, 0) = (1, 1)$ and $T(0, 1) = (0,
+  0)$. Consider the following matrix
+
+  \begin{equation*}
+    A = 
+    \begin{pmatrix}
+      1 & 0\\
+      1 & 0
+    \end{pmatrix}
+  \end{equation*}
+
+  We have $A[x; y] = [x; x]$. Therefore, $T(v) = Av$ for any vector
+  $v\in R^2$. We say that $A$ represents the linear transformation $T$
+  with respect to the standard bases of the domain and range of $T$.
+\end{example}
+
+\begin{theorem}
+  Let $T$ be a linear transformation from $F^n$ to $F^m$. There is an
+  $m\times n$ matrix $A$ such that $T(x) = Ax$.
+\end{theorem}
+\begin{proof}
+  The columns of $A$ are the coordinates, with respect to standard
+  basis of $F^m$, of images of the standard basis vectors of $F^n$.
+\end{proof}
+
+Ofcourse, there is nothing special about the standard bases in
+Theorem~\ref{}. Let $T : U\mapsto V$ be a linear transformation. If
+the vectors in $U$ are represented as coordinates over $B$ and vectors
+in $V$ as coordinates over $B'$, we can choose the columns of $A$ as
+the coordinates, with respect to $B'$, of images of vectors in $B$.
+
+The subspace $\trange(T)$ is the column space of $A$.
+
+The null-space of a matrix $A$ is $\{ x : Ax = 0 \}$.
+
+\begin{lemma}
+  There is an isomorphism between the null-space of $A$ and $A'$ when
+  $A$ and $A'$ are column equivalent.
+\end{lemma}
+\begin{proof}
+  The isomorphism depends on the type of column operation:
+
+  \begin{description}
+  \item [$c_i \swap c_j$] Swap the coordinates at $i$ and $j$.
+  \item [$c_i \gets \beta c_i$] Multiply the $i^\text{th}$ coordinate by
+    $\beta^{-1}$.
+  \item [$c_i \gets c_i + \beta c_j$] Change the $j^\text{th}$ coordinate
+    to $\alpha_j - \beta \alpha_i$.
+  \end{description}
+  It is easy to see that these are isomorphisms.
+\end{proof}
+
+\begin{theorem}
+  $\trank(T) + \tnullity(T) = \tdim(T)$
+\end{theorem}
+\begin{proof}
+  Let $A$ be a matrix that corresponds to $T$. Let $A'$ be the CREF of
+  $A$ with $r = \trank(T)$ non-zero columns. The null-space of $A'$
+  has dimension $n - r$ which is the same as the dimension of the
+  null-space of $A$.
+\end{proof}
+
+\Closesolutionfile{ans}
+\section*{Answers}
+\input{ans1}
+
+\end{document}

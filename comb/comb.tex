@@ -1,0 +1,637 @@
+\documentclass{article}
+
+\input{../preamble}
+
+\newcommand{\card}[1]{\ensuremath{|#1|}}
+\newcommand{\nat}{\ensuremath{N}}
+\newcommand{\pow}[1]{\ensuremath{2^{#1}}}
+\newcommand{\comb}[2]{\ensuremath{C\!\left(#1, #2\right)}}
+\newcommand{\perm}[2]{\ensuremath{P\!\left(#1, #2\right)}}
+\newcommand{\fact}[1]{\ensuremath{{#1}!}}
+\newcommand{\floor}[1]{\ensuremath{\left\lfloor#1\right\rfloor}}
+\newcommand{\pair}[2]{\ensuremath{\left(#1, #2\right)}}
+
+\begin{document}
+
+\section*{Introduction}
+Let us try solving some very simple problems to get a feel of
+combinatorics. We have 10 candies with us and we want to distribute
+them to two children A and B. How many ways are there to do this? If
+we choose not to give any candy to A, then we have to give all 10
+candies to B. Similarly, if we choose to give exactly one candy to A,
+then we have to give 9 candies to B. The pattern here is clear. Once
+we fix the number of candies that we give away to the child A, we have
+no choice on the number of candies that we give to B. So the number of
+ways to distribute is the same as number of ways to fix the number of
+candies that we give away to A. To complete the argument, we have 11
+choices on the number of candies that we give to A and therefore the
+answer is 11.  In general, if we have $n$ candies and we want to
+distribute all of them to two children A and B, we can do so in $n+1$
+possible ways.
+
+Now, what if there are more children? i.e., we have $n$
+candies and we want to find the number of ways to distribute them to 3
+children A, B and C. Unlike the 2 child version, fixing the number
+of candies that we give away to A does not fix the number of candies
+that we give to B or C. Suppose we give A $k$ candies. We ask how many
+ways are there to distribute candies if we give exactly $k$ candies
+to A. This number is exactly the number of ways to distribute the
+remaining $n-k$ candies to B and C. But in the previous paragraph we
+saw that this number is $n-k+1$. If we sum over all $k$ from $0$ to
+$n$, we will get the required answer. Indeed,
+$\sum_{k=0}^{n} (n-k+1) = 1 + \cdots + (n+1) = (n+1)(n+2)/2$. Later,
+we will answer the general version of this problem where there are $n$
+candies and $m$ children.
+
+Now that we have got a taste of the kind of problems we are going to
+deal with in combinatorics, we turn our attention to defining things
+mathematically. First, we have to specify the kind of problems that we
+are going to solve. We are interested in answering questions such as
+the following
+
+\begin{enumerate}
+\item How many anagrams are there for the word 'cat'?
+\item How many ways are there to form a committee of of 4 people from
+  a group of 10 people?
+\end{enumerate}
+
+How can we answer these questions? A naive approach is to try and list
+all possiblities. There are six anagrams for 'cat'. It would be
+cumbersome to find the number of anagrams for the word 'elephant'
+using this method. Also, once we have made a list of anagrams, how can
+we be sure that we have listed all of them. We need a better method.
+
+\section*{Basics}
+What is common to the two problems mentioned above? In both instances,
+\emph{we are interested in finding the number of elements in finite
+  sets}. The set in the first question consists of the words act,
+atc, cat, cta, tca and tac. Our first aim is to mathematically define
+what it means for a set to have $n$ elements where $n$ is a natural
+number.  Let $\nat$ denote the set of natural numbers
+$\{0, 1, \ldots \}$ and let $[n]$ for any natural $n \geq 1$ denote
+the set $\{0, \ldots n-1\}$. Define $[0] = \phi$.  The set $[n]$ is
+the \emph{canonical} set having $n$ elements.
+
+\begin{definition}
+  Set $A$ has exactly $n$ elements, for some natural number
+  $n \geq 0$, iff there is a bijection $f$ from $[n]$ to $A$.
+\end{definition}
+
+If a set $A$ has exactly $n$ elements, we denote this by
+$\card{A} = n$. We say that $f$ \emph{witnesses the cardinality} of
+$A$. Informally, what the above definition states is that a set has
+exactly $n$ elements iff we can list the elements in the set such that
+there is a first element, a second element, and so on until an
+$n^{\text{th}}$ element such that every element of the set appears
+exactly once in the list.
+
+The following properties can be easily verified.
+
+\begin{enumerate}
+\item For any set $A$, there is at most one $n$ such that
+  $\card{A} = n$.
+\item Let $A$ and $B$ be any two sets. Then $\card{A} = \card{B} = n$
+  iff there exists a bijection from $A$ to $B$.
+\end{enumerate}
+
+If $\card{A} = n$ for some $n$, then we say that $A$ is finite.
+
+We can also compare cardinalities of sets using functions. If $f$ is
+an injection (one-one function) from $A$ to $B$, then
+$\card{A} \leq \card{B}$. Similarly, if $f$ is a surjection (onto
+function), then $\card{A} \geq \card{B}$.
+
+\Opensolutionfile{ans}[ans1]
+
+
+\begin{exercise}
+  Let \comb{n}{i} denote the number of $i$ element subsets of $[n]$.
+  For any $n \geq 3$, prove that the number of 2-element subsets is at
+  least the number of 1-element subsets.
+
+  \begin{sol}
+    We exhibit an injection from the number of 1-element subsets to
+    the number of 2-element subsets. The function $f$ maps $\{i\}$ to
+    $\{i, i+1\}$ when $i < n$ and $f$ maps to $\{n\}$ to $\{1, n\}$.
+    The function $f$ is one-one because for $i \neq j$ and $i, j < n$,
+    we have $\{i, i+1\} \neq \{j, j+1\}$. Also, $\{n\}$ is the only
+    element that maps to $\{1, n\}$ since $n \geq 3$.
+  \end{sol}
+\end{exercise}
+
+
+\section*{Sum and Product}
+Mathematics works by building tools that can solve complex problems
+from tools that can solve simpler ones. Now that we've defined the
+number of elements in a set, we want to be able to argue about number
+of elements in sets obtained from other sets using set-theoretic
+operations (union, cross product etc.).
+
+\begin{exercise}
+  Prove the sum rule
+
+  Let $A$ and $B$ be two finite sets such that
+  $A \cap B = \phi$. Then
+  $\card{A \cup B} = \card{A} + \card{B}$.
+
+  \begin{sol}
+    Let $f$ and $g$ be bijections witnessing cardinalities of $A$ and
+    $B$ to be $n$ and $m$ respectively. Define the function
+    $h: [n+m] \mapsto A \cup B$ as $h(i) = f(i)$ if
+    $0 \leq i \leq n-1$ and $h(i) = g(i-n)$ otherwise. We now prove
+    that $h$ is a bijection.
+
+    The function $h$ is one-one. Take two elements $x$ and $y$ from
+    the set $[n+m]$. If both $x$ and $y$ are in $[n]$ or in
+    $R = \{n, \ldots ,n+m-1\}$, then $h(x) \neq h(y)$ because $f$ and
+    $g$ are one-one. So we can assume $x \in [n]$ and $y \in R$.
+    Therefore, $h(x) \in A$ and $h(y) \in B$. Since $A$ and $B$ are
+    disjoint $f(x) \neq f(y)$.
+
+    The function $h$ is onto. Take an element $y \in A \cup B$. If
+    $y \in A$, then there is some element $i \in [n]$ such that
+    $f(i) = y$. Therefore $h(i) = f(i) = y$. If $y \in B$, then there
+    exists a $j \in [m]$ such that $g(j) = y$. Therefore
+    $h(j+n) = g(j+n-n) = g(j) = y$.
+
+    \paragraph{Note.} The above definition of $h$ and the subsequent
+    proof that $h$ is a bijection may look daunting. But, the idea is
+    simple. We map the first $n$ numbers to distinct elements of $A$
+    as prescribed by $f$ and the next $m$ numbers to distinct elements
+    of $B$ as prescribed by $g$ to construct $h$ (Here we think of $n$
+    as 0, $n+1$ as 1 and so on.). This covers all elements of $A$ and
+    $B$. Now since $f$ and $g$ are one-one, the only way for $h$ to
+    not be one-one is if $f$ and $g$ has a common element in their
+    range. But, since the ranges of $f$ and $g$ are disjoint, this is
+    also ruled out. Once, we've gained enough experience with formally
+    defining functions and proving that they are bijections, we will
+    omit these nitty gritty details and only give intuitive
+    descriptions like this.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Prove the product rule
+
+  Let $A$ and $B$ be two finite sets. Then
+  $\card{A \times B} = \card{A}\card{B}$.
+
+  \begin{sol}
+    Let $f$ and $g$ be bijections witnessing the cardinalities of $A$
+    and $B$ to be $n$ and $m$ respectively.  Define the function
+    $h:[nm] \mapsto A \times B$ as
+    $h(i) = \pair{f\left(\floor{\frac{i}{m}}\right)}{g(i \mod m)}$.
+    We claim that $h$ is a bijection. Indeed, for any two distinct
+    elements $i$ and $j$, we have either
+    $\floor{\frac{i}{m}} \neq \floor{\frac{j}{m}}$
+    or $i\mod m \neq j\mod m$. Therefore, $h$ is one-one. For any
+    ordered pair $\pair{a_{i}}{b_{j}}$ we have $0 \leq k_{1} \leq n-1$ and
+    $0 \leq k_{2} \leq m-1$ such that
+    $\pair{a_{i}}{b_{j}} = \pair{f(k_{1})}{g(k_{2})}$. Then the element
+    $k = mk_1 + k_{2}$ satisfies
+    $h(k) = \pair{f(k_{1})}{g(k_{2})} = \pair{a_{i}}{b_{j}}$.
+  \end{sol}
+\end{exercise}
+
+We are now ready to find out how many anagrams does cat have without
+enumerating all of them. Define $A_{c}$, $A_{a}$ and $A_{t}$ as the
+sets of anagrams of cats starting with c, a and t respectively. How
+many anagrams of cat are there that starts with c. There are two of
+them -- cat and cta. (Here we are not enumerating all anagrams of
+'cat', just the ones that start with the letter c. This is easier than
+the original problem. So we are building a solution to a complex
+problem from solutions of simpler ones. This is called a
+\emph{reduction}). Therefore $\card{A_{c}} = 2$.  Similarly we have,
+$\card{A_{a}} = \card{A_{t}} = 2$. If $A$ is the set of all anagrams
+of cat, then we know that $A = A_{c} \cup A_{a} \cup A_{t}$ and we
+know that sets $A_{c}$, $A_{a}$ and $A_{t}$ are disjoint. So $A$ must
+have $2 \times 3 = 6$ elements. Later on we will solve this problem
+without using enumeration at all.
+
+Now is the time for some more definitions. Our goal is to formalize
+the notion of a string.  We define $A^{n}$ where $A$ is a set and
+$n \geq 1$ an integer as $A^{1} = A$ and $A^{n} = A \times A^{n-1}$.
+We represent the elements of $A^{n}$ by \emph{strings} of length $n$
+where each letter is from $A$ (Here $A$ is an \emph{alphabet}). For
+example, the element $\pair{0}{\pair{0}{1}}$ in the set
+${\{0,1\}}^{3}$ is written simply as the string $001$. Note that for
+any $A$, we have $\card{A^{n}} = \card{A}^{n}$ by the produce rule.
+
+\begin{exercise}
+  Let $A = \{ a_{1}, \ldots ,a_{n} \}$. Let $\pow{A}$ denote the set
+  of all subsets of $A$. Show that $\card{\pow{A}} = 2^{n}$ by
+  exhibiting a bijection from ${\{ 0, 1 \}}^{n}$.
+
+  \begin{sol}
+    Let $x$ be an $n$ bit binary string. We define $h(x)$ as the
+    subset $S$ of $A$ where $a_{i} \in S$ iff $x_{i} = 1$. It is easy
+    to prove that $h$ is a bijection.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Count the number of ways to arrange 100 fruits from left-to-right
+  from an infinite supply of apples and oranges.
+
+  \begin{sol}
+    Consider the set of all strings of length 100 where each letter is
+    O (Orange) or A (Apple). There is a bijection from this set to the
+    set of all possible arrangements. We know that there are $2^{100}$
+    such strings.
+  \end{sol}
+\end{exercise}
+
+\section*{Recurrences}
+Can we use the above method to count the number of anagrams of
+'cat'? No. The difficulty is that there is no way to express the set
+of all anagrams just as the cross product of sets. However, we can
+combine the union and cross product operations towards this end. We
+have
+$A = (\{c\}\times B_{1}) \cup (\{a\}\times B_{2}) \cup (\{t\}\times B_{3})$
+where $B_{1}$, $B_{2}$ and $B_{3}$ stand for the set of all anagrams
+of the words 'at', 'ct' and 'ac' respectively (If you don't get this
+write down all the above sets. Enumeration may not be a good way to
+solve such problems, but it is a good way to learn about them). A
+little bit of thought reveals that $B_{1}$, $B_{2}$ and $B_{3}$ all
+have the same number of elements, say $m$. So if we can compute $m$,
+we have $\card{A} = 3m$. But, how can we compute $m$. This is where
+the concept of recurrence comes in. A \emph{recurrence} describes a
+function by telling how to obtain the value of the function at some
+natural number $a$ from values of the function at numbers $b < a$. For
+example, let us consider the function defined as $e(n) = 2e(n-1)$ for
+all $n \geq 1$ and $e(0) = 1$. We can prove that $e(n) = 2^{n}$ for
+all $n \geq 0$ by induction. We have $e(0) = 2^{0} = 1$. Now assume
+that $e(n-1) = 2^{n-1}$. Then, we have
+$e(n) = 2e(n-1) = 2.2^{n-1} = 2^{n}$, thereby proving the claim. For
+simple recurrences, we can guess a closed form expression by writing
+down a few examples and then try to prove that the guessed expression
+is correct using induction.
+
+\begin{exercise}
+  Let $A = \{ a_{1}, \ldots ,a_{n} \}$. Find an expression for
+  \begin{enumerate}
+  \item the number of strings of length $k$ where each letter is from
+    $A$.
+  \item the number of strings of length $k$ where each letter is from
+    $A$ and any element in $A$ appears at most once.
+  \end{enumerate}
+  in terms of $n$ and $k$.
+
+  \begin{sol}
+    \begin{enumerate}
+    \item Let $f(n, k)$ denote the required number. Define $W_{a_{i}}$
+      as the set of all strings of length $k$ starting with
+      $a_{i}$. For $a_{i} \neq a_{j}$, we have $W_{a_{i}} \cap
+      W_{a_{j}} = \phi$. The set $W_{a_{i}}$ for any $i$ has the same
+      number of elements as the set of all strings of length $(k-1)$
+      over the alphabet $A$. To see this, consider the bijection that
+      maps $x \in W_{a_{i}}$ to the string $y$ obtained by deleting
+      the first letter from $x$. The set $W_{a_{i}}$ has $f(n, k-1)$
+      elements. Therefore, the required number is $\sum_{i=1}^{n} f(n,
+      k-1) = nf(n, k-1)$.  We have $f(n, 1) = n$.  We have, by solving
+      the recurrence, $f(n, k) = n^{k}$.
+
+    \item We assume that $k \leq n$. Let $\perm{n}{k}$ denote the
+      required number. Define $W_{a_{i}}$ as the set of all strings of
+      length $k$ starting with $a_{i}$. For $a_{i} \neq a_{j}$, we
+      have $W_{a_{i}} \cap W_{a_{j}} = \phi$. The set $W_{a_{i}}$ for
+      any $i$ has the same number of elements as the set of all
+      strings of length $(k-1)$ over the alphabet $A\setminus
+      \{a_{i}\}$. Therefore, the required number is
+      $n\perm{n-1}{k-1}$. We have $\perm{n}{1} = n$. We have, by
+      solving the recurrence, $\perm{n}{k} = n(n-1)\ldots (n-k+1)$.
+    \end{enumerate}
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  The function $f$ is defined as $f(n) = nf(n-1)$ for all $n \geq 1$
+  and $f(0) = 1$. Prove that the function $f$ satisfies
+  $(\floor{n/2})\log(n/2) \leq \log(f(n)) \leq n\log(n)$ for all $n
+  \geq 2$ where the logarithms are to the base 2. The function $f$ is
+  called the factorial function and $f(n)$ is denoted $\fact{n}$. By
+  expanding the recurrence, we observe that $\fact{n} = 1 \times
+  \cdots \times n$.
+
+  \begin{sol}
+    Observe that $f(n) = n(n-1)\ldots 1$. Taking logarithm to base 2
+    on both sides, we have
+    $\log(f(n)) = \log(n) + \log(n-1) + \cdots + \log(1) \leq
+    n\log(n)$.
+    Also, the first $\floor{n/2}$ terms in the
+    summation are at least $\log(n/2)$ giving the lower bound on
+    $\log(f(n))$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Find an expression for the number of ways to arrange $n$ people in a
+  row at a wedding if
+  \begin{enumerate}
+  \item Bride must be to the right of the groom.
+  \item Bride is somewhere to the left of the groom.
+  \end{enumerate}
+  in terms of $n$.
+
+  \begin{sol}
+    \begin{enumerate}
+    \item Let $A_{i}$ for $i$ from 1 to $(n-1)$ denote the set of all
+      possible arrangements where groom is in position $i$ and bride
+      is in position $i+1$. For $i \neq j$, we have
+      $A_{i} \cap A_{j} = \phi$. Now $A_{i}$ for any $i$ contains
+      exactly $\fact{(n-2)}$ elements since the remaining $(n-2)$
+      people can be arranged in $\fact{(n-2)}$ ways. So the answer is
+      $(n-1)\fact{(n-2)}$.
+    \item Let $A_{i, j}$ where $1 \leq i \leq n-1$ and $j > i$ denote
+      the set of all arrangements where bride is in position $i$ and
+      groom is in position $j$. As before, the $A_{i,j}$s are disjoint
+      and each of them has $a = \fact{(n-2)}$ elements. There are
+      $b = (n-1)n/2$ such sets. So the answer is $ab$.
+    \end{enumerate}
+  \end{sol}  
+\end{exercise}
+
+
+\section*{Overcounting Helps}
+Sometimes while counting a set, we will intentionally overcount and
+then later correct the mistake to get the right answer. Let us look at
+an example. Suppose we want to count the number of students in a class
+and all we have are the lists of students enrolled for physics,
+chemistry and maths. In addition, we know that each student enrolls
+for exactly two out of these three subjects. Add up the number of
+students in these lists. We must have counted each student twice (One
+for each subject he/she enrolled for). Therefore, we can get the
+number of students by dividing the total by $2$. The following set of
+excercises develops this technique.
+
+\begin{exercise}
+  A function $f: A \mapsto B$, where $A$ and $B$ are finite, is called
+  a $k$-to-$1$ function if for any $y \in B$, we have exactly $k$
+  distinct elements from $A$ satisfying $f(x) = y$.
+
+  Show that if there exists a $k$-to-$1$ function from $A$ to $B$, then 
+  $\card{A} = k\card{B}$.
+
+  \begin{sol}
+    Let $F$ be the $k$-to-$1$ function. Let $f$ be a function
+    witnessing the cardinality of $B$ to be $n$.  For each $y \in B$,
+    define $A_{y}$ to be the set $k$ elements in $A$ satisfying
+    $F(x) = y$. Let $g_{y} : [k] \mapsto A_{y}$ be a bijection
+    witnessing the cardinality of $A_{y}$ to be $k$. Define the
+    bijection $h : [kn] \mapsto A$ as $h(i) = g_{b_{f(m)}}(i\mod k)$,
+    where $m = \floor{\frac{i}{k}}$ and
+    $B = \{b_{0}, \ldots ,b_{\card{B}-1}\}$. The function $h$ simply
+    maps first $k$ numbers to the preimages of $b_{0}$, next $k$
+    numbers to the preimages of $b_{1}$ and so on.
+
+    (An alternate proof) Observe that $A_{y}$ and $A_{x}$ are disjoint
+    for $x \neq y$. And, each $A_{x}$ has exactly $k$
+    elements. Furthermore, we have $A = \bigcup_{y\in B} A_{y}$. By
+    applying the sum rule, we have $\card{A} = k\card{B}$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Find an expression for the number of distinct diagonals for an
+  $n$-sided polygon.
+
+  \begin{sol}
+    Let the vertices of the polygon be labelled $0, \ldots ,n-1$ such
+    $i$ is adjacent to $i+1$ modulo $n$. Consider the set
+    $A = \{ \pair{i}{j} : j \not\in \{ i, i+1, i-1 \}\mod n \}$.
+    There are $n(n-3)$ elements in $A$. There is a natural $2$-to-$1$
+    mapping from $A$ to the set of diagonals where $\pair{i}{j}$ and
+    $\pair{j}{i}$ map to the diagonal between vertices $i$ and $j$. The
+    answer is $n(n-3)/2$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Find an expression for the number of ways to place two
+  non-threatening rooks in a $k$-by-$k$ chessboard in terms of $k$.
+
+  \begin{sol}
+    Consider the set
+    $A = \{ \pair{\pair{i}{j}}{\pair{i'}{j'}} : i' \neq i, j' \neq j
+    \}$
+    where all numbers are between 0 and $k-1$.  The elements of $A$
+    represent pairs of non-threatening positions for two rooks on a
+    $k$-by-$k$ chessboard. There are $k^{2}(k^{2} - 2k + 1)$ elements
+    in $A$. But elements $\pair{\pair{i}{j}}{\pair{i'}{j'}}$ and
+    $\pair{\pair{i'}{j'}}{\pair{i}{j}}$ in $A$ correspond to the same
+    placement of two rooks and these are the only pairs that
+    correspond to this placement. So there is a 2-to-1 function from
+    $A$ to the set of all possible placements of two rooks. So the
+    answer is $k^{2}(k^{2} - 2k + 1)/2$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  \begin{enumerate}
+  \item Find an expression for the number of ways to distribute $n$ labelled
+    balls into $k$ labelled bins in terms of $n$ and $k$.
+    
+  \item Find an expression for the number of ways to distribute $n$ labelled
+    balls into $k$ unlabelled bins in terms of $n$ and $k$.
+  \end{enumerate}
+  
+  \begin{sol}
+    \begin{enumerate}
+    \item Consider the set of all strings $A$ of length $n$ where each
+      letter is from the set $\{1, \ldots , k\}$. There is a bijection
+      from this set to the set of all ways to distribute $n$ labelled
+      balls into $k$ labelled bins. i.e., $i^{\text{th}}$ ball is
+      placed in $j^{\text{th}}$ bin iff the $i^{\text{th}}$ letter of
+      the string is $j$. So the answer is $k^{n}$.
+
+    \item We show that there is a $\fact{k}$-to-1 mapping from $A$ to
+      the set of all ways to distribute $n$ labelled balls into $k$
+      unlabelled bins. Indeed, given any element in $A$ we can permute
+      the alphabet in exactly $\fact{k}$ ways without changing the
+      distribution. So the answer is $k^{n}/\fact{k}$.
+    \end{enumerate}
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Let $A = \{ a_{1}, \ldots ,a_{n} \}$. Find an expression for the
+  number of strings where each letter in the string is an element of
+  $A$ and the string has $k_{i}$ occurrences of $a_{i}$ for each $i$
+  (in terms of $n$ and $k_{i}$s).
+
+  \begin{sol}
+    Let $m = \sum_{i = 1}^{n} k_{i}$ denote the length of the
+    strings. Suppose that all letters are distinct, say
+    $\{a_{1,1}, \ldots ,a_{1,k_{1}}, \ldots ,a_{n,k_{n}} \}$. Let
+    $A_{0}$ be the set of all strings over this new alphabet. Clearly,
+    we have $\card{A_{0}} = \fact{m}$.  Now assume that the letters
+    $a_{1,1}, \ldots ,a_{1,k_{1}}$ are replace by $a_{1}$ and let
+    $A_{1}$ be the set of all strings over this alphabet where $a_{1}$
+    appears exactly $k_{1}$ times and every other letter appears
+    exactly once. We exhibit a $\fact{k_{1}}$-to-1 mapping from
+    $A_{0}$ to $A_{1}$. This mapping $h$ maps a string in $A_{0}$ into
+    the string obtained by replacing $a_{1, i}$ for all
+    $1 \leq i \leq k_{1}$ by $a_{1}$. Let $x \in A_{0}$ and let
+    $I = \{i_{1}, \ldots ,i_{k_{1}}\}$ be the positions of
+    $a_{1, 1}, \ldots ,a_{1,k_{1}}$ and let $x' = h(x)$. Then, any and
+    only those strings in $A_{0}$ where the letters
+    $a_{1, 1}, \ldots ,a_{1,k_{1}}$ occur in positions $I$ and all
+    other letters are in their same position as in $x$ will map to
+    $x'$. There are exactly $\fact{k_{1}}$ ways to arrange
+    $a_{1, 1}, \ldots ,a_{1,k_{1}}$ in positions $I$. Therefore, we
+    have $\card{A_{1}} = \card{A_{0}}/\fact{k_{1}}$.  Similarly, we
+    construct $A_{i+1}$ from $A_{i}$ by replacing letters $a_{i+1, j}$
+    for $j$ from $1$ to $k_{i+1}$ with $a_{i+1}$. It holds that
+    $\card{A_{i+1}} = \card{A_{i}}/\fact{k_{i+1}}$ for all $i$ from 1
+    to $n-1$. It follows that
+    $\card{A_{n}} = \frac{\fact{m}}{\fact{k_{1}}\ldots\fact{k_{n}}}$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Let $A = \{ a_{1}, \ldots ,a_{n} \}$. Find an expression for the
+  number of $k$-element subsets of $A$ in terms of $n$ and $k$.
+
+  \begin{sol}
+    There exists a bijection from strings in ${\{0, 1\}}^{n}$ with
+    exactly $k$ 1's to the $k$-element subsets of $A$. And, we know
+    that the number of strings with exactly $k$ 1's and $(n-k)$ 0's is
+    $\frac{\fact{n}}{\fact{k}\fact{(n-k)}}$. This number is denoted
+    $\comb{n}{k}$.
+  \end{sol}
+\end{exercise}
+
+\begin{exercise}
+  Find an expression for
+
+  \begin{enumerate}
+  \item the number of ways to split $2n$ people into 2
+  teams of $n$ people each.
+  \item the number of ways to split $2n+1$ people into 2
+  teams of $n+1$ and $n$ people.
+\end{enumerate}
+
+  in terms of $n$.
+
+  \begin{sol}
+    \begin{enumerate}
+    \item Label the players $1, \ldots ,2n$ with $0$ (for team $0$) or
+      $1$ (for team $1$). The number of strings with exactly $n$ 1's
+      and $n$ 0's is $\frac{\fact{(2n)}}{\fact{n}\fact{n}}$. But,
+      changing the team labels does not change the split into teams
+      and there are exactly 2 different ways to label teams given a
+      split. So the answer is
+      $\frac{\fact{(2n)}}{2(\fact{n})(\fact{n})}$.
+
+    \item Here we just have to count the number of strings with $n$
+      0's and $(n+1)$ 1's. The answer is
+      $\frac{\fact{(2n+1)}}{\fact{(n+1)}\fact{n}}$. If we define $h$ as
+      the function mapping such a string to the split where
+      $i^{\text{th}}$ player is in team $0$ iff $i^{\text{th}}$ bit is
+      $0$, then $h$ is a bijection from such strings to all possible
+      splits.
+    \end{enumerate}
+  \end{sol}  
+\end{exercise}
+
+\begin{exercise}
+  Find an expression for the number of integral solutions to
+  $x_{1} + \ldots + x_{k} = n$ where $x_{i} \geq 0$ for all
+  $1 \leq i \leq k$ in terms of $n$ and $k$.
+
+  \begin{sol}
+    We exhibit a bijection from all possible strings with $(k-1)$ 1's
+    and $n$ 0's to the set of all solutions. We let $x_{i}$ to be the
+    number of $0$'s between the ${(i-1)}^{\text{st}}$ and the
+    $i^{\text{th}}$ 1 in the string for $2 \leq i \leq k-1$. We let
+    $x_{1}$ to be the number of 0's before the first 1 and we let
+    $x_{k}$ to be the number of 0's after the last 1. It is easy to
+    see that this is a bijection. The answer is \comb{n+k-1}{n}.
+  \end{sol}
+\end{exercise}
+
+\section*{Pitfall: Overcounting}
+
+Let us try to count the number of 4-bit strings with at least 2 zeroes
+in it. There are $\comb{4}{2} = 6$ ways to choose 2 positions for the
+2 mandatory zeroes and for each of these 6 choices, the other two bits
+could take on all $4$ possible values. So the answer must be
+$6\times 4 = 24$. But, there are only 16 4-bit strings! Where did we
+go wrong? Let us look into how our solution applied the methods that
+we learned in more detail. First, we split our solution into 6 sets
+$S_{ij}$ where $i$ and $j$ are distinct numbers from 1 to 4 where
+$i < j$. Here $S_{12}$ contains all 4-bit strings where there are
+zeroes in positions 1 and 2. Therefore,
+$S_{12} = \{ 0000, 0001, 0010, 0011 \}$. Then we argued that by
+symmetry any $S_{ij}$ must have 4 elements as well. Then we applied
+the sum rule to obtain our answer. But
+$S_{23} = \{ 0000, 0001, 1000, 1001 \}$. Here $S_{12}$ and $S_{23}$
+are not disjoint and the sum rule cannot be applied.
+
+Even though the sum rule turned out to be inapplicable in the previous
+solution, we can solve the same problem using the sum rule itself. The
+trick is to partition the set of all strings with at least 2 zeroes
+into disjoint sets. Define $S_{i}$ to be the set of all 4-bit strings
+with \emph{exactly} $i$ zeroes. Then the set we are trying to count is
+$S_{2}\cup S_{3}\cup S_{4}$. Clearly, these sets are disjoint and sum
+rule is applicable. We have $\card{S_{i}} = \comb{4}{i}$. And, the
+required answer is
+$\comb{4}{2} + \comb{4}{3} + \comb{4}{4} = 6 + 4 + 1 = 13$.
+
+\section*{An Application: Proving Combinatorial Identities}
+Double counting is a technique that uses counting to prove
+combinatorial identities. We will illustrate this technique by proving
+that $\comb{n}{k} = \comb{n}{n-k}$ for all $0 \leq k \leq n$ and
+$n \geq 1$. Let $A$ be the set of all $k$-element subsets of the set
+$[n]$. Then $\card{A} = \comb{n}{k}$ by definition. We can also obtain
+a set in $A$ by choosing $n-k$ elements in $[n]$ to be excluded from
+our set. There are $\comb{n}{n-k}$ ways to choose the $n-k$ elements
+in $[n]$ to be excluded from our set and each of these ways gives a
+distinct $k$-element subset of $[n]$. So $\card{A} = \comb{n}{n-k}$.
+
+\begin{exercise}
+  Prove the following identities using double counting.
+  \begin{enumerate}
+  \item $\comb{n}{k} = \comb{n-1}{k-1} + \comb{n-1}{k}$ for
+    $1 \leq k \leq n$. Define $\comb{n}{0} = 1$ and $\comb{n}{k} = 0$
+    when $n < k$.
+  \item ${(x+y)}^{n} = \sum_{k=0}^{n} \comb{n}{k}{x}^{k}{y}^{n-k}$
+  \item Explain why Pascal's triangle works.
+  \item $\sum_{k = 0}^{n} \comb{n}{k} = 2^n$
+  \item $\sum_{k = 0}^{n} {(-1)}^{k}\comb{n}{k} = 0$
+  \item $\comb{n}{r}\comb{n-r}{k} = \comb{n}{r+k}\comb{r+k}{r}$ for
+    $r+k \leq n$ and $n$, $k$ and $r$ are positive integers.
+  \item $\fact{k}\comb{n}{k} = \perm{n}{k}$
+  \end{enumerate}
+\end{exercise}
+
+\section*{The Inclusion-Exclusion Principle (PIE)}
+Let $A$ and $B$ be two finite sets. We have the following identity.
+\begin{equation}
+  \card{A\cup B} = \card{A} + \card{B} - \card{A\cap B}
+\end{equation}
+How can we prove this identity? Look at the expression on the right
+hand side.  The term \card{A} counts each element in $A\setminus B$
+once and the term \card{B} counts each element in $B\setminus A$
+once. What about elements in $A\cap B$? Each element in this part of
+$A\cup B$ is counted twice, once in \card{A} and once in \card{B}. So
+we subtract $\card{A\cap B}$ to eliminate this overcounting.
+
+PIE is a generalization of the above formula. Let
+$A_{1}, \ldots ,A_{n}$ be $n$ finite sets. We use $A_{J}$ where
+$J\subseteq \{1, \ldots ,n\}$ to denote intersection of all $A_{i}$s
+where $i\in J$.
+\begin{equation}
+  \card{A_{1}\cup \ldots \cup A_{n}} = \sum_{i = 1}^{n} \sum_{J: \card{J} = i}{(-1)}^{i+1} A_{J}
+\end{equation}
+
+\Closesolutionfile{ans}
+\section*{Answers}
+\input{ans1}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
