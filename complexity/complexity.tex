@@ -29,6 +29,7 @@
 \newcommand{\SharpP}{\class{\#P}}
 
 \newcommand{\mM}{\class{M}}
+\newcommand{\mN}{\class{N}}
 \newcommand{\mU}{\class{U}}
 
 \newcommand{\polym}{\leq_m^p}
@@ -174,15 +175,28 @@ that TMs cannot represent certain algorithms -- such as binary
 search -- faithfully. But, for the classes of problems we are
 going to study, this restriction is irrelevant.
 
-Extended Church-Turing Thesis: Any physically realizable
-computational model can be simulated efficiently (with polynomial
-overhead) by some TM. On the other hand, we also assume that any
-reasonable computational model can simulate TMs efficiently.
-Together, these two requirements ensure that our theorems about
-computation are indeed about computation and not about specific
-computational models.
+Church-Turing Thesis: Any computational problem that can be
+solved by a physically realizable computational model can be
+solved by a Turing machine.
+
+The Church-Turing thesis is the most fundamental axiom in
+computability theory. It implies that all theorems we prove about
+Turing machines are theorems that hold true for computation in
+general. This means that we can study the abstract notion of
+computation by studying the concrete model of Turing machine.
+
 
 \section{Time and Space}
+
+Unfortunately, all languages that are decidable by Turing
+machines cannot be considered decidable in practice. For example,
+there are languages that would require billions of years to
+decide on a fast computer for even moderately sized instances.
+This necessitates a way to model \emph{resource} consumption of
+algorithms executing on various computational models. The most
+fundamental resources are time taken for computation and the
+number of different tape cells used during computation (This
+models the amount of memory required).
 
 Definition of time and space complexity (worst-case) and
 associated complexity classes.
@@ -233,7 +247,40 @@ natural numbers.
 
 Encoding Turing Machines
 
-Specify some binary encoding that is prefix-free.
+A Turing machine can be encoded as a string. It should be clear
+that this can be done using the symbols of the alphabet, comma,
+numbers, and parenthesis. To simplify the alphabet, we can encode
+each of these symbols using fixed-length binary strings and
+convert the encoding to a binary string.
+
+It should be clear to the reader that once we fix the above
+encoding, we can enumerate all Turing machines algorithmically.
+The proof is straightforward but tedious. A high-level
+description of this algorithm is given below.
+
+\begin{algobox}
+
+  \begin{algorithmic}
+
+    \Function{Enumerate}{}
+      \For{$\ell$ from $1$ to $\infty$}
+        \ForAll{$x\in\{0,1\}^\ell$}
+          \If{$x$ encodes a valid TM} \Comment{Parsers exist.}
+            \State Output $x$
+          \EndIf
+        \EndFor
+      \EndFor
+    \EndFunction
+
+  \end{algorithmic}
+
+\end{algobox}
+
+Notice that checking for validity of encoding is purely syntactic
+such as checking for balanced parenthesis and checking that the
+states appearing in transition function are present in the set of
+states. Therefore, this algorithm enumerates even Turing machines
+that may not halt on all inputs.
 
 \subsection{Universal Turing Machines}
 
@@ -257,26 +304,176 @@ Specifically, we prove
 
 \end{theorem}
 
-Enumerating Time and Space Bounded Turing Machines
+\begin{proof}
 
-Time and space constructibility are required here.
+  The machine $\mU$ stores the current state of $\mM$ and the
+  current tape contents of $\mM$ on its tape with a special
+  marker to indicate the tape head position of $\mM$. To simulate
+  one step of $\mM$, the machine $\mU$ writes the current symbols
+  under the head to a separate tape and performs a lookup in the
+  transition function table stored on a separate tape. After
+  this, the machine $\mU$ overwrites the symbols under the tape
+  head using the output of the transition function, updates the
+  state, and updates the current state of $\mM$. The contents of
+  the tapes are stored sequentially with padding blank symbols on
+  both sides and the size of the space for a tape is doubled if
+  the tape head reaches the end of the space allocated for it
+  with the padding blank symbols on both sides being the same as
+  the number of non-blank symbols (This is the same approach used
+  to implement dynamically-growing tables with good amortized
+  running time for inserting elements).
 
-Time Hierarchy:
+  It can be seen that to simulate $t$ steps of $\mM$, the machine
+  $\mU$ takes at most $|\mM|^2t^2$ time by an amortized analysis.
+  The space used at any point is proportional to the space used
+  by $\mM$ where the factor is at most the length of $\mM$.
 
-Mention Hennie-Stearns simulation that gives better time
-hierarchy theorems.
+\end{proof}
 
-The $\log(t)$ overhead during simulation is not a fundamental
-aspect of computation. If we fix our computational model to a
-random access machine and consider only languages over the binary
-alphabet, then a constant factor overhead simulation is possible
-(A.G. Ivanov 1982). This shows that the precise statement of the
-time hierachy theorem depends on the computational model being
-considered. But, the time hierarchy theorem holds in some form
-for any reasonable computational model as seen in
-Exercise~\ref{}.
+If the input TM to the universal TM does not halt on $x$, then
+$\mU$ also does not halt. Interpreters that monitor and control
+resource usage while executing programs are useful in theory and
+practice. How should an interpreter monitor time? Clearly, it
+cannot impose a fixed limit such as 1000 steps because then it
+would be useless for arbitrary inputs. Instead, the interpreter
+sets the limit to a value that depends on the input length. For
+example, the interpreter may allow the program to execute for $n$
+steps or $n^2$ steps on inputs of length $n$. In general, we can
+design interpreters that allows programs to execute for $t(n)$
+steps where $t(n)$ is any time-constructible function.
 
-Space Hierarchy:
+\begin{definition}
+
+  A function $t(n)$ on natural numbers is called
+  \emph{time-constructible} if there exists a TM that on input
+  $1^n$ writes exactly $t(n)$ ones to a designated output tape in
+  $O(t(n))$ steps.
+
+\end{definition}
+
+Clearly, functions such as $t(n) = \log(n)$ are not
+time-constructible because it would take at least $n$ steps to
+read all of the input. An easy diagonalization argument proves
+that there are functions where $t(n) \geq n$ that are not
+time-constructible. Luckily, all common functions such as
+polynomials and exponentials are time-constructible.
+
+\begin{exercise}
+
+  If $t_1$ and $t_2$ are time-constructible, show that $t_1+t_2$,
+  $t_1t_2$, and $t_1^{t_2}$ are time-constructible.
+
+\end{exercise}
+
+The notion of space-constructible functions are similarly
+motivated.
+
+\begin{definition}
+
+  A function $s(n)$ on natural numbers is called
+  \emph{space-constructible} if there exists a TM that on input
+  $1^n$ writes exactly $s(n)$ ones to a designated output tape
+  using at most $O(s(n))$ tape cells.
+
+\end{definition}
+
+Indeed, there are sub-linear space-constructible functions.
+
+\begin{exercise}
+
+  Show that $\lceil\log_2(n)\rceil$ is space constructible.
+
+\end{exercise}
+
+And many interesting functions are space-constructible.
+
+\begin{exercise}
+
+  If $s_1$ and $s_2$ are space-constructible, so is $s_1+s_2$,
+  $s_1s_2$, and $s_1^{s_2}$.
+
+\end{exercise}
+
+Using interpreters that monitor time and space, it is not
+possible to design an algorithm to enumerate TMs where the
+resource usage is constrained. Let $t(n)$ be a time-constructible
+function. Given a string $x$ that encodes some TM, we can output
+a string $y$ that encodes a TM $\mM_x$ such that $\mM_x$ runs for
+at most $t^2(n)$ steps on any input and if $\mM$ is $t(n)$-time
+bounded then $\mM_x$ decides the same language as $\mM$. The
+machine $\mM_x$ on input $z$ of length $n$ begins by writing
+$t(n)$ ones to a tape using time-constructibility. After that it
+behaves the same as $\mU$ on the input $(x, z)$ except that for
+each simulated step it crosses out a one from the $t(n)$ ones
+written initially. Therefore, the machine $\mM_x$ simulates
+exactly $t(n)$ steps of $x$ and it does so in time at most
+$t^2(n)$. Now, the machine that enumerates all TMs that runs in
+$t(n)$ time outputs $\mM_x$ for each $x$.
+
+With our new interpreter, we are ready to prove a fundamental
+theorem about computation. More time means more power.
+
+\begin{theorem}
+
+  Let $t(n)$ be a time-constructible function. Then there exists
+  a language that can be decided in time $t^2(n)$ but not in time
+  $O(t(n))$.
+
+\end{theorem}
+
+\begin{proof}
+
+  We use a diagonalization argument. We will design a TM $\mM$
+  that runs in at most $t^2(n)$ steps and will differ from every
+  TM that runs in $t(n)$ steps on at least one input. The TM
+  $\mM$ interprets its input $x$ as a TM and simulates $x$ on
+  input $x$ for at most $t(n)$ steps. If $x$ runs to completion
+  on $x$ within $t(n)$ steps, then $M$ does the opposite of
+  whatever $x$ does.
+
+  By using $\mU$, it is clear that $\mM$ runs in at most $t^2(n)$
+  steps. Now, if there is a language $L$ where $\mN$ decides it
+  in $O(t(n))$ time, then we can choose a sufficiently large
+  encoding of $\mN$, say $x$, such that the machine $\mM$ accepts
+  $x$ if $x\not\in L$ and rejects $x$ if $x\in L$. Here, we
+  crucially use the fact that descriptions of TMs are
+  \emph{paddable} without changing the language decided by it,
+  for example, by adding unused states.
+
+\end{proof}
+
+The above theorem is not as good as it can be. For example, it
+does not prove that there are languages that can be decided in
+$n\log(n)$ steps which cannot be decided in $O(n)$ steps. This
+gap can be improved by using a simulation of $t$-time $k$-type
+TMs by $2$-tape TMs in $t\log(t)$ steps by Hennie and Stearns.
+The machine $\mM$ will only accept encodings to $2$-tape TMs and
+these can be simulated with only a constant factor overhead (The
+overhead is originally due to the difficulty of simulating an
+arbitrary number of tapes using a fixed number of tapes).
+However, to simulate $t(n)$ steps in the original TM, we now have
+to simulate $t\log(t)$ steps in the $2$-tape TM.
+
+We note that the $\log(t)$ overhead during simulation is not a
+fundamental aspect of computation. If our computational model is
+a random access machine and we consider only languages over the
+binary alphabet, then a constant factor overhead simulation is
+possible (A.G. Ivanov 1982). This shows that the precise
+statement of the time hierachy theorem depends on the
+computational model being considered. But, the time hierarchy
+theorem holds in some form for any reasonable computational model
+as seen in Exercise~\ref{}.
+
+We can use space-bounded interpreters to prove a space hierarchy
+theorem. Unlike time-bounded interpretation, there is virtually
+no space overhead for simulating TMs. So the theorem is tighter.
+
+\section{Complexity Classes}
+
+We introduce the following definition for languages can be
+decided in specified time and space.
+
+DTIME, DSPACE
 
 \section{$\P$ vs $\NP$}
 
@@ -299,6 +496,16 @@ solved efficiently in practice.
   $\P = \bigcup_{k\geq 1} \DTIME(n^k)$
 
 \end{definition}
+
+The extended Church-Turing thesis pins down this assumption.
+
+Extended Church-Turing Thesis: Any physically realizable
+computational model can be simulated efficiently (with polynomial
+overhead) by some TM. On the other hand, we also assume that any
+reasonably powerful computational model can simulate TMs
+efficiently.  Together, these two requirements ensure that our
+theorems about class $\P$ are indeed about efficient computation
+and not about efficiency of specific computational models.
 
 Class $\P$ is invariant to the model by extended Church-Turing
 thesis.
@@ -647,7 +854,13 @@ the world of Turing machines.
 The complexity class $\L$ is the set of all problems solvable
 using at most $c\log(n)$ work tape cells for some constant $c$.
 It is considered as the class of all problems solvable
-efficiently where the complexity measure is space.
+efficiently where the complexity measure is space. Notice that
+while measuring space usage, we consider the input tape read-only
+and therefore we do not account for the tape cells used on the
+input tape as space used by the TM. Practically, this is the
+class of problems by algorithms that only store \emph{pointers}
+to input data which is read from read-only storage such as a
+CD-ROM or from a network.
 
 The analogue of the class $\NP$ in this setting, called class
 $\NL$ is the class of all problems efficiently verifiable in
@@ -749,6 +962,16 @@ given $r_{n-1}$
 
 \section{The Polynomial Hierarchy}
 
+How powerful is a poly-time algorithm for $\SAT$? Trivially, it
+will solve all $\NP$-complete problems in poly-time. However, it
+can even solve problems seemingly not in $\NP$. The easiest
+example is the $\TAUT$ language, the set of all tautological
+propositional formulas. Intuitively, it seems that no small
+certificates exist for proving that a formula is a tautology.
+Indeed, the largest class of problems that we know to have
+poly-time algorithms given a poly-time algorithm for $\SAT$ is
+the polynomial hierarchy.
+
 The language $\TAUT$ is complete for $\co\NP$. Indeed, this
 problem can be thought of as deciding whether $\forall x \phi(x)$
 is true for a given propositional formula $\phi$. In this way,
@@ -757,7 +980,10 @@ $\exists x \phi(x)$ is true for a given propositional formula
 $\phi$. What is the set of all languages reducible to the problem
 of deciding whether $\exists x \forall y \phi(x, y)$ is true for
 a given propositional formula $\phi$? Observe that this set
-contains both $\NP$ and $\co\NP$.
+contains both $\NP$ and $\co\NP$. By definition, this class has a
+complete problem. However, unlike $\P$ and $\NP$, there is no
+machine model for it. We are going to fix this by providing two
+equivalent machine models for this class.
 
 Oracle machines. $\mM^L$ is a TM that has access to an oracle
 that decides $L$. Access to $\SAT$ is equivalent to access to any
@@ -1162,7 +1388,9 @@ $\phi$ from this assignment.
   $P(X)$ has root $a$ if and only if $X-a$ is a factor. If $a$ is
   a root, then $P(X) = Q(X)(X-a) + R$ and $R$ has to be a
   constant and therefore $P(a) = R = 0$. If $X-a$ is a factor,
-  then $P(X) = Q(X)(X-a)$ and $P(a) = 0$.  \end{proof}
+  then $P(X) = Q(X)(X-a)$ and $P(a) = 0$.
+
+\end{proof}
 
 \section{The PCP Theorem and Inapproximability}
 
